@@ -34,6 +34,56 @@ const NIVELES = {
   operativo: /\b(analista|auxiliar|asistente|operari[oa]|operativ[oa]|ejecutiv[oa]|agente)\b/i,
 };
 
+async function buscarJooble(cargo, ciudad) {
+  if (JOOBLE_KEY === "PEGA_AQUI_TU_CLAVE_DE_JOOBLE") {
+    throw new Error("Falta configurar la clave de Jooble. Revisa el README, paso 3.");
+  }
+
+  // Jooble recibe un POST con la clave en la URL y el filtro en el cuerpo.
+  const respuesta = await fetch(`https://co.jooble.org/api/${JOOBLE_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ keywords: cargo, location: ciudad }),
+  });
+
+  if (!respuesta.ok) {
+    throw new Error(`Jooble respondió con estado ${respuesta.status}`);
+  }
+
+  const datos = await respuesta.json();
+
+  // Normalizamos: dejamos solo lo que el panel necesita mostrar.
+  return (datos.jobs || []).map((j) => ({
+    titulo: j.title,
+    empresa: j.company || "Empresa confidencial",
+    ubicacion: j.location,
+    salario: j.salary || "A convenir",
+    fuente: j.source,
+    publicada: j.updated,
+    enlace: j.link,          // enlace directo y estable a la vacante real
+    resumen: (j.snippet || "").replace(/<[^>]*>/g, "").slice(0, 220),
+  }));
+}
+
+/**
+ * Registro de fuentes de vacantes. Cada fuente normaliza sus resultados al
+ * mismo formato ({titulo, empresa, ubicacion, salario, fuente, publicada,
+ * enlace, resumen}) para que el frontend nunca tenga que saber de dónde vino
+ * cada oferta.
+ *
+ * Computrabajo, elempleo y Magneto365 no tienen una API pública como Jooble:
+ * conectarlas de verdad requiere gestionar acceso comercial directamente con
+ * cada portal. Quedan aquí deshabilitadas como punto de extensión — cuando
+ * se consiga acceso a alguna, se activa (`habilitada: true`) y se implementa
+ * su `buscar()` con la documentación real de esa API.
+ */
+const FUENTES = {
+  jooble: { habilitada: true, buscar: buscarJooble },
+  computrabajo: { habilitada: false, buscar: null },
+  elempleo: { habilitada: false, buscar: null },
+  magneto365: { habilitada: false, buscar: null },
+};
+
 /**
  * Endpoint principal: /api/ofertas?cargo=Director de Cobranza&ciudad=Bogotá&nivel=direccion
  * El buscador del frontend llamará aquí en vez de usar ofertas fijas.
@@ -47,54 +97,35 @@ app.get("/api/ofertas", async (req, res) => {
     return res.status(400).json({ error: "Escribe un cargo para buscar." });
   }
 
-  if (JOOBLE_KEY === "PEGA_AQUI_TU_CLAVE_DE_JOOBLE") {
-    return res.status(500).json({
-      error: "Falta configurar la clave de Jooble. Revisa el README, paso 3.",
+  const activas = Object.values(FUENTES).filter((f) => f.habilitada);
+
+  const resultados = await Promise.allSettled(
+    activas.map((f) => f.buscar(cargo, ciudad))
+  );
+
+  const exitosos = resultados.filter((r) => r.status === "fulfilled");
+  if (exitosos.length === 0) {
+    const primerError = resultados[0] && resultados[0].reason ? resultados[0].reason.message : null;
+    console.error("Error consultando fuentes de empleo:", primerError);
+    return res.status(502).json({
+      error: primerError || "No se pudo consultar las ofertas ahora mismo.",
     });
   }
 
-  try {
-    // Jooble recibe un POST con la clave en la URL y el filtro en el cuerpo.
-    const respuesta = await fetch(`https://co.jooble.org/api/${JOOBLE_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ keywords: cargo, location: ciudad }),
-    });
+  let ofertas = exitosos.flatMap((r) => r.value);
 
-    if (!respuesta.ok) {
-      throw new Error(`Jooble respondió con estado ${respuesta.status}`);
-    }
-
-    const datos = await respuesta.json();
-
-    // Normalizamos: dejamos solo lo que el panel necesita mostrar.
-    let ofertas = (datos.jobs || []).map((j) => ({
-      titulo: j.title,
-      empresa: j.company || "Empresa confidencial",
-      ubicacion: j.location,
-      salario: j.salary || "A convenir",
-      fuente: j.source,
-      publicada: j.updated,
-      enlace: j.link,          // enlace directo y estable a la vacante real
-      resumen: (j.snippet || "").replace(/<[^>]*>/g, "").slice(0, 220),
-    }));
-
-    const patronNivel = NIVELES[nivel];
-    if (patronNivel) {
-      ofertas = ofertas.filter((o) => patronNivel.test(o.titulo));
-    }
-
-    res.json({ cargo, ciudad, nivel: nivel || null, total: ofertas.length, ofertas });
-  } catch (err) {
-    console.error("Error consultando Jooble:", err.message);
-    res.status(502).json({ error: "No se pudo consultar las ofertas ahora mismo." });
+  const patronNivel = NIVELES[nivel];
+  if (patronNivel) {
+    ofertas = ofertas.filter((o) => patronNivel.test(o.titulo));
   }
+
+  res.json({ cargo, ciudad, nivel: nivel || null, total: ofertas.length, ofertas });
 });
 
 // Chequeo rápido de salud (útil para confirmar que el servidor está vivo)
 app.get("/api/estado", (_req, res) => {
   const configurado = JOOBLE_KEY !== "PEGA_AQUI_TU_CLAVE_DE_JOOBLE";
-  res.json({ ok: true, joobleConfigurado: configurado });
+  res.json({ ok: true, joobleConfigurado: configurado, fuentesActivas: Object.keys(FUENTES).filter((k) => FUENTES[k].habilitada) });
 });
 
 app.listen(PORT, () => {

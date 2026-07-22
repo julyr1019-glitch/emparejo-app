@@ -73,9 +73,11 @@
   .suggest div span{color:var(--faint);font-size:12px}
 
   .filtros{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px auto 0;max-width:720px}
-  .filtros select{font-size:13px;color:var(--dim);background:var(--panel);border:1px solid var(--line);border-radius:10px;
-    padding:9px 12px;cursor:pointer}
-  .filtros select:focus{outline:none;border-color:var(--violet);color:var(--text)}
+  .filtros select,.filtros input{font-size:13px;color:var(--dim);background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:9px 12px;cursor:pointer;font-family:inherit}
+  .filtros input{cursor:text;min-width:150px;flex:1}
+  .filtros select:focus,.filtros input:focus{outline:none;border-color:var(--violet);color:var(--text)}
+  .filtro-msg{font-size:12px;color:var(--faint);text-align:center;margin-top:6px}
 
   .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px auto 0;max-width:820px}
   .chip{font-size:12px;color:var(--dim);background:var(--panel);border:1px solid var(--line);border-radius:999px;
@@ -133,6 +135,9 @@
   .stp{font-size:12px;color:var(--dim);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 13px;display:flex;align-items:center;gap:7px}
   .stp b{width:18px;height:18px;border-radius:50%;background:var(--panel2);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:11px}
   .stp.on{border-color:var(--violet)} .stp.on b{background:var(--violet);color:#150c2b}
+  .stp{cursor:pointer}
+  .stp.locked{opacity:.45;cursor:not-allowed;pointer-events:none}
+  .wstep{display:none} .wstep.on{display:block}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px}
   .card h3{margin:0 0 4px;font-size:15px}
@@ -190,6 +195,65 @@
   .empty-hint{font-size:13px;color:var(--faint);text-align:center;padding:40px 20px;border:1px dashed var(--line);border-radius:12px}
   .note{margin-top:14px;font-size:12px;color:var(--faint);line-height:1.6}
   footer{margin-top:26px;font-size:11px;color:var(--faint);text-align:center;line-height:1.6}
+
+  /* ===== Foto de perfil ===== */
+  .photo-row{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+  .photo-thumb{width:72px;height:72px;border-radius:50%;background:var(--bg);border:1px solid var(--line);
+    flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--faint);font-size:10px;text-align:center}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover}
+  .photo-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+  /* ===== Selector de plantilla ===== */
+  .tpl-picker{display:flex;gap:10px;flex-wrap:wrap}
+  .tpl-card{background:var(--panel2);border:1.5px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;
+    width:130px;text-align:center;transition:border-color .12s}
+  .tpl-card:hover{border-color:var(--faint)}
+  .tpl-card.active{border-color:var(--violet)}
+  .tpl-swatch{height:60px;border-radius:6px;background:#fff;margin-bottom:8px;padding:8px;display:flex;flex-direction:column;gap:4px}
+  .tpl-swatch span{display:block;background:#ddd;border-radius:2px;height:6px}
+  .tpl-swatch-clasico span:first-child{width:60%;background:#999}
+  .tpl-swatch-moderno{padding:0}
+  .tpl-swatch-moderno .band{height:20px;background:var(--violet);border-radius:6px 6px 0 0;margin:0}
+  .tpl-swatch-moderno span:not(.band){margin:4px 8px 0}
+  .tpl-swatch-ejecutivo{flex-direction:row;padding:0;gap:0}
+  .tpl-swatch-ejecutivo .side{width:32%;background:var(--panel2);border-radius:6px 0 0 6px}
+  .tpl-swatch-ejecutivo .main{flex:1;background:#eee;border-radius:0 6px 6px 0}
+  .tpl-name{font-size:13px;font-weight:700;margin-bottom:3px}
+  .tpl-tag{font-size:10px;padding:2px 8px;border-radius:999px;display:inline-block}
+  .tpl-tag.ok{background:rgba(84,209,135,.15);color:var(--ok)}
+  .tpl-tag.warn{background:rgba(255,207,92,.15);color:var(--warn)}
+  .tpl-tag.bad{background:rgba(255,122,102,.15);color:var(--coral)}
+  .tpl-warn{margin-top:10px;font-size:12px;color:var(--warn);line-height:1.5;background:rgba(255,207,92,.08);border:1px solid rgba(255,207,92,.25);border-radius:8px;padding:10px 12px}
+
+  /* ===== Plantillas de CV (dentro de #cvPreview .cvout) ===== */
+  .cvph{width:56px;height:56px;border-radius:50%;object-fit:cover;flex:none}
+  .cvph-lg{width:110px;height:110px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 14px}
+  .cvout.tpl-moderno{padding:0;overflow:hidden}
+  .cvout.tpl-moderno .cvhead{background:linear-gradient(135deg,#4a3f8f,#7d5bff);color:#fff;padding:22px 30px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .cvout.tpl-moderno .cvhead h2{color:#fff;margin:0}
+  .cvout.tpl-moderno .cvhead .role{color:rgba(255,255,255,.85)}
+  .cvout.tpl-moderno .cvbody{padding:22px 30px}
+  .cvout.tpl-moderno h4{color:#7d5bff;border-bottom-color:#e4defc}
+  .cvout.tpl-ejecutivo{display:grid;grid-template-columns:34% 66%;padding:0;overflow:hidden}
+  .cvout.tpl-ejecutivo .cv-sidebar{background:#f4f1ff;padding:26px 20px;text-align:center}
+  .cvout.tpl-ejecutivo .cv-sidebar h2{font-size:17px}
+  .cvout.tpl-ejecutivo .cv-sidebar .role{margin-bottom:14px}
+  .cvout.tpl-ejecutivo .cv-sidebar h4{border-bottom-color:#ddd;text-align:left}
+  .cvout.tpl-ejecutivo .cv-sidebar p,.cvout.tpl-ejecutivo .cv-sidebar .kwline{text-align:left}
+  .cvout.tpl-ejecutivo .cv-main{padding:26px 24px}
+  @media(max-width:560px){.cvout.tpl-ejecutivo{grid-template-columns:1fr}}
+
+  /* ===== Impresión a PDF: solo se ve la vista previa del CV ===== */
+  @media print{
+    body *{visibility:hidden !important}
+    #cvPreview,#cvPreview *{visibility:visible !important}
+    #cvPreview{position:absolute;top:0;left:0;width:100%;margin:0}
+    .cvout{box-shadow:none !important;border:none !important;border-radius:0 !important;margin:0 !important}
+    .cvout,.cvout *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .cvout h4,.cvout li,.cvout p{break-inside:avoid;page-break-inside:avoid}
+    @page{size:A4;margin:14mm 12mm}
+  }
   @media(max-width:820px){.cols{grid-template-columns:1fr}}
   @media(max-width:560px){.hero h2,.intro h2{font-size:22px}.job-actions{align-items:flex-start;flex-direction:row}}
 </style>
@@ -223,19 +287,55 @@
       <div class="suggest" id="suggest"></div>
     </div>
     <div class="filtros">
-      <select id="ciudad">
-        <option value="Colombia">Toda Colombia</option>
-        <option value="Bogotá">Bogotá</option>
-        <option value="Medellín">Medellín</option>
-        <option value="Cali">Cali</option>
-        <option value="Barranquilla">Barranquilla</option>
-        <option value="Bucaramanga">Bucaramanga</option>
-      </select>
+      <input id="ciudad" list="ciudades" value="Colombia" autocomplete="off" placeholder="Ciudad (o 'Colombia' para todo el país)">
+      <datalist id="ciudades">
+        <option value="Colombia">
+        <option value="Bogotá">
+        <option value="Medellín">
+        <option value="Cali">
+        <option value="Barranquilla">
+        <option value="Cartagena">
+        <option value="Cúcuta">
+        <option value="Bucaramanga">
+        <option value="Pereira">
+        <option value="Santa Marta">
+        <option value="Ibagué">
+        <option value="Pasto">
+        <option value="Manizales">
+        <option value="Neiva">
+        <option value="Villavicencio">
+        <option value="Armenia">
+        <option value="Valledupar">
+        <option value="Montería">
+        <option value="Sincelejo">
+        <option value="Popayán">
+        <option value="Tunja">
+        <option value="Riohacha">
+        <option value="Florencia">
+        <option value="Yopal">
+        <option value="Quibdó">
+        <option value="Arauca">
+        <option value="Soledad">
+        <option value="Soacha">
+        <option value="Buenaventura">
+      </datalist>
       <select id="nivel">
         <option value="">Todos los niveles</option>
         <option value="direccion">Dirección</option>
         <option value="jefatura">Jefatura</option>
         <option value="operativo">Operativo</option>
+      </select>
+      <select id="salario">
+        <option value="0">Cualquier salario</option>
+        <option value="1000000">Más de $1.000.000</option>
+        <option value="2000000">Más de $2.000.000</option>
+        <option value="3000000">Más de $3.000.000</option>
+        <option value="5000000">Más de $5.000.000</option>
+        <option value="8000000">Más de $8.000.000</option>
+        <option value="15000000">Más de $15.000.000</option>
+      </select>
+      <select id="fuente">
+        <option value="">Todas las fuentes</option>
       </select>
     </div>
     <div class="chips" id="chips"></div>
@@ -247,14 +347,17 @@
   <div class="view" id="vCV">
     <div class="intro">
       <h2>Haz que tu CV <em>pase los filtros</em> automáticos.</h2>
-      <p>La mayoría de empresas usan sistemas ATS que descartan CV antes de que un humano los lea. Sube o pega tu hoja de vida, indica el cargo, y te damos un puntaje ATS, ajustes concretos y un borrador reconstruido.</p>
+      <p>La mayoría de empresas usan sistemas ATS que descartan CV antes de que un humano los lea. Sube o pega tu hoja de vida, indica el cargo, y te damos un puntaje ATS, ajustes concretos y un CV reconstruido en PDF.</p>
     </div>
-    <div class="steps">
-      <div class="stp on" id="s1"><b>1</b> Tu CV + cargo</div>
-      <div class="stp" id="s2"><b>2</b> Diagnóstico ATS</div>
-      <div class="stp" id="s3"><b>3</b> CV reconstruido</div>
+    <div class="steps" id="wizardSteps">
+      <div class="stp on" id="s1" data-step="1"><b>1</b> Tu CV + cargo</div>
+      <div class="stp locked" id="s2" data-step="2"><b>2</b> Diagnóstico ATS</div>
+      <div class="stp locked" id="s3" data-step="3"><b>3</b> Editar y diseñar</div>
+      <div class="stp locked" id="s4" data-step="4"><b>4</b> Vista previa y PDF</div>
     </div>
-    <div class="cols">
+
+    <!-- Paso 1: subir CV -->
+    <div class="wstep on" id="step1">
       <div class="card">
         <h3>1 · Tu hoja de vida y objetivo</h3>
         <p class="hint">Sube tu CV (PDF, Word o texto) o pega el contenido. Indica el cargo al que aspiras.</p>
@@ -266,38 +369,101 @@
         <div id="filetag"></div>
         <div class="field"><label>Contenido del CV</label><textarea id="cv" placeholder="Pega aquí el texto de tu hoja de vida…"></textarea></div>
         <div class="field"><label>Cargo al que aspiras</label><input type="text" id="target" placeholder="Ej: Director de Cobranza"></div>
+        <div id="analyzeMsg" class="empty-hint" style="display:none;margin-bottom:12px"></div>
         <div class="btnrow"><button class="btn" id="analyze">Analizar mi CV</button><button class="btn ghost" id="clear">Limpiar</button></div>
       </div>
+    </div>
+
+    <!-- Paso 2: diagnóstico ATS -->
+    <div class="wstep" id="step2">
       <div class="card">
         <h3>2 · Diagnóstico ATS</h3>
         <p class="hint">Puntaje y hallazgos concretos sobre qué mejorar.</p>
-        <div id="atsEmpty" class="empty-hint">Analiza tu CV para ver el diagnóstico aquí.</div>
-        <div class="ats" id="ats">
-          <div class="scorewrap">
-            <div class="gauge" id="gauge"><div class="v"><b id="scoreN">0</b><small>ATS Score</small></div></div>
-            <div class="verdict"><div class="lvl" id="verdictLvl"></div><p id="verdictTxt"></p></div>
-          </div>
-          <div class="bars" id="bars"></div>
-          <div class="findings" id="findings"></div>
-          <div style="margin-top:14px"><div style="font-size:12px;color:var(--dim);margin-bottom:6px">Palabras clave del cargo</div><div class="kwgrid" id="kwgrid"></div></div>
-          <div class="btnrow" style="margin-top:16px"><button class="btn lime" id="rebuild">Reconstruir mi CV optimizado →</button></div>
+        <div class="scorewrap">
+          <div class="gauge" id="gauge"><div class="v"><b id="scoreN">0</b><small>ATS Score</small></div></div>
+          <div class="verdict"><div class="lvl" id="verdictLvl"></div><p id="verdictTxt"></p></div>
+        </div>
+        <div class="bars" id="bars"></div>
+        <div class="findings" id="findings"></div>
+        <div style="margin-top:14px"><div style="font-size:12px;color:var(--dim);margin-bottom:6px">Palabras clave del cargo</div><div class="kwgrid" id="kwgrid"></div></div>
+        <div class="btnrow" style="margin-top:16px">
+          <button class="btn ghost" data-prevstep="1">← Anterior</button>
+          <button class="btn lime" data-nextstep="3">Continuar a editar y diseñar →</button>
         </div>
       </div>
     </div>
-    <div class="card" id="rebuildCard" style="display:none;margin-top:16px">
-      <h3>3 · CV reconstruido con enfoque ATS</h3>
-      <p class="hint">Borrador optimizado a partir de tu contenido. Edita los campos y descárgalo. Mantén un formato simple (sin tablas ni columnas) para que los ATS lo lean bien.</p>
-      <div class="cols" style="margin-bottom:14px">
-        <div class="field"><label>Nombre completo</label><input type="text" id="fName"></div>
-        <div class="field"><label>Cargo / titular</label><input type="text" id="fRole"></div>
+
+    <!-- Paso 3: editar contenido, foto y diseño -->
+    <div class="wstep" id="step3">
+      <div class="card">
+        <h3>3 · Editar contenido, foto y diseño</h3>
+        <p class="hint">Ajusta el texto, agrega una foto opcional y elige cómo se ve tu CV.</p>
+
+        <div class="field">
+          <label>Foto de perfil (opcional)</label>
+          <div class="photo-row">
+            <div class="photo-thumb" id="photoThumb"><span>Sin foto</span></div>
+            <div class="photo-actions">
+              <input type="file" id="photoFile" accept="image/*" style="display:none">
+              <button type="button" class="btn ghost" id="photoPick">Subir foto</button>
+              <button type="button" class="btn ghost" id="photoRemove" style="display:none">Quitar foto</button>
+              <div id="photoMsg" class="empty-hint" style="display:none;padding:8px;margin-top:6px"></div>
+            </div>
+          </div>
+          <p class="hint" style="margin-top:6px">La foto solo aparece en los diseños Moderno y Ejecutivo — el Clásico la omite a propósito (mejor compatibilidad con ATS).</p>
+        </div>
+
+        <div class="cols" style="margin-bottom:14px">
+          <div class="field"><label>Nombre completo</label><input type="text" id="fName"></div>
+          <div class="field"><label>Cargo / titular</label><input type="text" id="fRole"></div>
+        </div>
+        <div class="field"><label>Contacto (ciudad · teléfono · correo · LinkedIn)</label><input type="text" id="fContact"></div>
+        <div class="field"><label>Perfil profesional (2-3 líneas con palabras clave del cargo)</label><textarea id="fProfile" style="min-height:90px"></textarea></div>
+        <div class="field"><label>Experiencia (una línea por logro; empieza con verbo de acción)</label><textarea id="fExp" style="min-height:120px"></textarea></div>
+        <div class="field"><label>Competencias clave (separadas por coma)</label><textarea id="fSkills" style="min-height:60px"></textarea></div>
+
+        <div class="field">
+          <label>Diseño del CV</label>
+          <div class="tpl-picker" id="tplPicker">
+            <label class="tpl-card active" data-tpl="clasico">
+              <div class="tpl-swatch tpl-swatch-clasico"><span></span><span></span><span></span></div>
+              <div class="tpl-name">Clásico</div>
+              <div class="tpl-tag ok">Máxima compatibilidad ATS</div>
+            </label>
+            <label class="tpl-card" data-tpl="moderno">
+              <div class="tpl-swatch tpl-swatch-moderno"><span class="band"></span><span></span><span></span></div>
+              <div class="tpl-name">Moderno</div>
+              <div class="tpl-tag warn">Buena compatibilidad</div>
+            </label>
+            <label class="tpl-card" data-tpl="ejecutivo">
+              <div class="tpl-swatch tpl-swatch-ejecutivo"><span class="side"></span><span class="main"></span></div>
+              <div class="tpl-name">Ejecutivo</div>
+              <div class="tpl-tag bad">Menos compatible con ATS</div>
+            </label>
+          </div>
+          <p class="tpl-warn" id="tplWarn" style="display:none"></p>
+        </div>
+
+        <div class="btnrow">
+          <button class="btn ghost" data-prevstep="2">← Anterior</button>
+          <button class="btn lime" data-nextstep="4">Ver vista previa →</button>
+        </div>
       </div>
-      <div class="field"><label>Contacto (ciudad · teléfono · correo · LinkedIn)</label><input type="text" id="fContact"></div>
-      <div class="field"><label>Perfil profesional (2-3 líneas con palabras clave del cargo)</label><textarea id="fProfile" style="min-height:90px"></textarea></div>
-      <div class="field"><label>Experiencia (una línea por logro; empieza con verbo de acción)</label><textarea id="fExp" style="min-height:120px"></textarea></div>
-      <div class="field"><label>Competencias clave (separadas por coma)</label><textarea id="fSkills" style="min-height:60px"></textarea></div>
-      <div class="btnrow"><button class="btn lime" id="preview">Ver vista previa</button><button class="btn" id="download">Descargar CV (.txt)</button></div>
-      <div id="cvPreview" style="margin-top:16px"></div>
-      <div class="note">Nota: descarga en texto plano, ideal para copiar en Word con tu formato o pegar en formularios. Para ATS evita imágenes, tablas, columnas y fuentes exóticas.</div>
+    </div>
+
+    <!-- Paso 4: vista previa y descarga -->
+    <div class="wstep" id="step4">
+      <div class="card">
+        <h3>4 · Vista previa y descarga</h3>
+        <p class="hint">Revisa cómo se ve tu CV y descárgalo. El PDF conserva el texto real (legible por ATS), no es una imagen.</p>
+        <div id="cvPreview"></div>
+        <div class="btnrow" style="margin-top:16px">
+          <button class="btn ghost" data-prevstep="3">← Anterior</button>
+          <button class="btn lime" id="printCV">Descargar CV (PDF) →</button>
+          <button class="btn ghost" id="download">Descargar también en .txt</button>
+        </div>
+        <div class="note">El PDF se genera con la función de imprimir del navegador — en el diálogo, elige "Guardar como PDF". El .txt es una opción secundaria simple para pegar en formularios.</div>
+      </div>
     </div>
   </div>
 
@@ -310,6 +476,8 @@ function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-
 const enc=s=>encodeURIComponent((s||"").trim());
 function slug(s){return (s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s-]/g,"").replace(/\s+/g,"-").replace(/-+/g,"-");}
 function uniq(a){return [...new Set(a)];}
+const STOP=new Set(["de","del","la","el","los","las","en","y","para","con","un","una"]);
+function words(s){return norm(s).split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));}
 function safeScroll(id){try{const el=$(id);if(el&&el.scrollIntoView)el.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
 const APP={currentTarget:""};
 
@@ -341,12 +509,64 @@ const SOURCES=[
 /* ================= Búsqueda contra el backend real (Jooble) ================= */
 function fechaCorta(s){ return /^\d{4}-\d{2}-\d{2}/.test(s||"") ? s.slice(0,10) : ""; }
 
+/* Jooble no filtra por salario ni trae ese dato en todas las vacantes; el
+   filtro de salario/fuente se aplica del lado del cliente sobre lo ya
+   descargado, sin volver a consultar el backend. */
+let ultimasOfertas=[];
+let ultimoNivelLabel="";
+
+function parseSalarioMensual(s){
+  if(!s) return null;
+  const nums=(s.match(/[\d][\d.,]*/g)||[])
+    .map(n=>parseInt(n.replace(/[.,]/g,""),10))
+    .filter(n=>!isNaN(n)&&n>0);
+  if(!nums.length) return null;
+  let valor = nums.length>=2 ? (nums[0]+nums[1])/2 : nums[0];
+  if(norm(s).includes("ano")||norm(s).includes("anual")) valor=valor/12;
+  return Math.round(valor);
+}
+
+function poblarFuentes(ofertas){
+  const sel=$("fuente"); if(!sel) return;
+  const actual=sel.value;
+  const fuentes=uniq(ofertas.map(o=>o.fuente).filter(Boolean)).sort();
+  sel.innerHTML=`<option value="">Todas las fuentes</option>`+
+    fuentes.map(f=>`<option value="${escapeAttr(f)}">${escapeHtml(f)}</option>`).join("");
+  if(fuentes.includes(actual)) sel.value=actual;
+}
+
+function aplicarFiltrosClientSide(){
+  const salarioMin=parseInt(($("salario")&&$("salario").value)||"0",10);
+  const fuenteSel=$("fuente")?$("fuente").value:"";
+  let filtradas=ultimasOfertas;
+  if(salarioMin>0){
+    filtradas=filtradas.filter(o=>{ const v=parseSalarioMensual(o.salario); return v!==null && v>=salarioMin; });
+  }
+  if(fuenteSel){
+    filtradas=filtradas.filter(o=>o.fuente===fuenteSel);
+  }
+  renderJobsList(filtradas);
+}
+
+function renderJobsList(ofertas){
+  const box=$("jobsBox");
+  if(!box) return;
+  if(!ofertas.length){
+    box.innerHTML = ultimasOfertas.length
+      ? `<div class="empty">Ningún resultado cumple estos filtros de salario/fuente. <a href="#" data-clearfiltros="1">Quitar filtros</a></div>`
+      : "";
+    return;
+  }
+  box.innerHTML=`<div class="jobs">${ofertas.map(o=>jobCard(o,ultimoNivelLabel)).join("")}</div>`;
+}
+
 async function doSearch(termino){
   const cargo=(termino||"").trim();
   const box=$("results");
   if(!cargo){ box.innerHTML=""; return; }
   hideSuggest();
   APP.currentTarget=cargo;
+  ultimasOfertas=[];
 
   box.innerHTML=`<div class="status-line">Buscando ofertas de "<b>${escapeHtml(cargo)}</b>"…</div>`;
 
@@ -363,15 +583,18 @@ async function doSearch(termino){
       return;
     }
 
-    const nivelLabel=nivel?NIVEL_LABELS[nivel]:"";
+    ultimoNivelLabel=nivel?NIVEL_LABELS[nivel]:"";
+    ultimasOfertas=data.ofertas||[];
+    poblarFuentes(ultimasOfertas);
+
     let html="";
 
-    if(!data.ofertas || data.ofertas.length===0){
+    if(ultimasOfertas.length===0){
       html+=`<div class="status-line"><span class="tagx none">Sin resultados</span><span>No encontramos vacantes para "<b>${escapeHtml(cargo)}</b>" en ${escapeHtml(data.ciudad||ciudad)} ahora mismo.</span></div>`;
       html+=fallbackPanel(cargo);
     }else{
       html+=`<div class="status-line"><span class="tagx ok">✓ ${data.total} ofertas</span><span>encontradas para "<b>${escapeHtml(cargo)}</b>" en ${escapeHtml(data.ciudad||ciudad)}.</span></div>`;
-      html+=`<div class="jobs">${data.ofertas.map(o=>jobCard(o,nivelLabel)).join("")}</div>`;
+      html+=`<div id="jobsBox"></div>`;
     }
 
     html+=`<div class="bridge">
@@ -381,6 +604,7 @@ async function doSearch(termino){
       </div>`;
 
     box.innerHTML=html;
+    if(ultimasOfertas.length) aplicarFiltrosClientSide();
     safeScroll("results");
   }catch(err){
     box.innerHTML=`<div class="status-line"><span class="err">⚠ No se pudo conectar con el servidor. ¿Está encendido el backend?</span></div>`;
@@ -452,23 +676,28 @@ function kwForTarget(target){const t=norm(target);
 }
 const ACTION_VERBS=["lideré","dirigí","gestioné","implementé","desarrollé","coordiné","optimicé","reduje","aumenté","diseñé","logré","supervisé","negocié","ejecuté","establecí","mejoré","administré","recuperé"];
 function analyze(cv,target){
-  const text=cv||"",t=norm(text); const kws=uniq(kwForTarget(target));
+  const text=cv||"",t=norm(text);
+  // Además de la lista curada por categoría, sumamos las palabras del propio cargo
+  // escrito por el usuario, así cualquier cargo (no solo los 5 reconocidos) recibe señal propia.
+  const kws=uniq([...kwForTarget(target),...words(target)]);
   const hits=kws.filter(k=>t.includes(norm(k))); const miss=kws.filter(k=>!t.includes(norm(k)));
   const kwScore=Math.round((hits.length/Math.max(kws.length,1))*100);
   const targetPresent=target&&norm(text).includes(norm(target.split(" ")[0]));
   const numbers=(text.match(/\d+%|\$[\s.]?\d|[\d]{2,}/g)||[]).length;
   const quantScore=Math.min(100,numbers*12);
-  const verbHits=ACTION_VERBS.filter(v=>t.includes(v)).length; const verbScore=Math.min(100,verbHits*18);
+  const verbHits=ACTION_VERBS.filter(v=>t.includes(norm(v))).length; const verbScore=Math.min(100,verbHits*18);
   const sections=["perfil","experiencia","formación","educación","competencias","habilidades","certificaci","contacto"];
-  const secHits=sections.filter(s=>t.includes(s)).length; const structScore=Math.min(100,secHits*22);
+  const secHits=sections.filter(s=>t.includes(norm(s))).length; const structScore=Math.min(100,secHits*22);
   const wc=text.trim().split(/\s+/).filter(Boolean).length;
   const lenScore=wc<80?30:wc<200?70:wc<900?100:75;
   const total=Math.round(kwScore*0.34+quantScore*0.16+verbScore*0.14+structScore*0.20+lenScore*0.08+(targetPresent?100:0)*0.08);
-  return {total:Math.min(99,total),kwScore,quantScore,verbScore,structScore,lenScore,hits,miss,numbers,verbHits,targetPresent,wc};
+  const hasEmail=/[\w.+-]+@[\w-]+\.[\w.-]+/.test(text);
+  const hasPhone=/\b\d[\d\s]{6,}\d\b/.test(text);
+  const bulletLines=(text.match(/^\s*[-•*]\s+.+$/gm)||[]).length + (text.match(/^\s*\d+[.)]\s+.+$/gm)||[]).length;
+  return {total:Math.min(99,total),kwScore,quantScore,verbScore,structScore,lenScore,hits,miss,numbers,verbHits,targetPresent,wc,hasEmail,hasPhone,bulletLines};
 }
 const colr=v=>v>=70?"g":v>=45?"y":"r";
 function renderATS(a,target){
-  $("atsEmpty").style.display="none"; $("ats").classList.add("show"); $("s2").classList.add("on");
   const g=$("gauge"); g.style.setProperty("--p",a.total);
   g.style.setProperty("--gc",a.total>=70?"var(--ok)":a.total>=45?"var(--warn)":"var(--coral)");
   $("scoreN").textContent=a.total;
@@ -489,12 +718,15 @@ function renderATS(a,target){
   if(a.verbHits<3) F.push(["warn","!","Usa más verbos de acción en pasado (lideré, reduje, implementé, negocié)."]);
   else F.push(["ok","✓","Buen uso de verbos de acción."]);
   if(a.structScore<66) F.push(["warn","!","Asegura secciones claras: Perfil, Experiencia, Formación, Competencias, Certificaciones."]);
+  if(a.hasEmail&&a.hasPhone) F.push(["ok","✓","Datos de contacto completos (correo y teléfono)."]);
+  else if(a.hasEmail||a.hasPhone) F.push(["warn","!","Falta correo o teléfono en el CV — agrégalo para que puedan contactarte."]);
+  else F.push(["bad","✕","No se detectó correo ni teléfono en el CV — sin esto no pueden contactarte."]);
+  if(a.wc>150&&a.bulletLines===0) F.push(["warn","!","Tu CV es texto corrido sin viñetas — usa bullets para destacar logros y facilitar la lectura."]);
   $("findings").innerHTML=F.map(([c,i,t])=>`<div class="finding ${c}"><div class="ic">${i}</div><div>${t}</div></div>`).join("");
   $("kwgrid").innerHTML=a.hits.map(k=>`<span class="kw hit">✓ ${k}</span>`).join("")+a.miss.map(k=>`<span class="kw miss">+ ${k}</span>`).join("");
   window.__lastAnalysis={a,target};
 }
 function seedRebuild(cv,target,a){
-  $("rebuildCard").style.display=""; $("s3").classList.add("on");
   const lines=cv.split(/\n+/).map(l=>l.trim()).filter(Boolean);
   let name=lines.find(l=>/^[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s.]{5,40}$/.test(l))||"";
   if(!name&&lines.length){ name=lines[0].split(/[.·|]/)[0].trim().slice(0,50); }
@@ -507,16 +739,108 @@ function seedRebuild(cv,target,a){
   const expLines=lines.filter(l=>l.length>25&&/[a-z]/.test(l)).slice(0,6).map(l=>l.replace(/^[-•·]\s*/,"")).map(l=>l.charAt(0).toUpperCase()+l.slice(1));
   $("fExp").value=expLines.join("\n");
   $("fSkills").value=uniq([...a.hits,...a.miss]).join(", ");
-  renderPreview(); safeScroll("rebuildCard");
 }
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+/* ================= Foto de perfil (100% en el navegador) ================= */
+let photoDataUrl=null;
+function resizeImageToDataUrl(file,maxDim){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const side=Math.min(img.width,img.height);
+      const sx=(img.width-side)/2, sy=(img.height-side)/2;
+      const c=document.createElement("canvas"); c.width=maxDim; c.height=maxDim;
+      const ctx=c.getContext("2d");
+      ctx.drawImage(img,sx,sy,side,side,0,0,maxDim,maxDim);
+      resolve(c.toDataURL("image/jpeg",0.82));
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(url); reject(new Error("No se pudo leer la imagen.")); };
+    img.src=url;
+  });
+}
+function renderPhotoThumb(){
+  const t=$("photoThumb");
+  t.innerHTML=photoDataUrl?`<img src="${photoDataUrl}" alt="Foto de perfil">`:`<span>Sin foto</span>`;
+  $("photoRemove").style.display=photoDataUrl?"":"none";
+}
+async function onPhotoSelected(file){
+  if(!file) return;
+  const msg=$("photoMsg"); msg.style.display="none";
+  try{
+    photoDataUrl=await resizeImageToDataUrl(file,320);
+    renderPhotoThumb(); renderPreview();
+  }catch(e){
+    msg.style.display=""; msg.textContent="No se pudo procesar la foto: "+e.message;
+  }
+}
+function removePhoto(){ photoDataUrl=null; renderPhotoThumb(); renderPreview(); }
+
+/* ================= Plantillas de CV ================= */
+let template="clasico";
+const TPL_WARN="Este diseño usa color y/o columnas: se ve mejor para redes (LinkedIn) y revisores humanos, pero algunos sistemas ATS automáticos pueden leerlo peor. Para máxima compatibilidad ATS, elige el diseño Clásico.";
+function selectTemplate(id){
+  template=id;
+  document.querySelectorAll(".tpl-card").forEach(c=>c.classList.toggle("active",c.getAttribute("data-tpl")===id));
+  const warn=$("tplWarn");
+  if(id!=="clasico"){ warn.style.display=""; warn.textContent=TPL_WARN; }
+  else if(photoDataUrl){ warn.style.display=""; warn.textContent="El diseño Clásico no incluye foto (recomendado para ATS). Cambia de diseño para mostrarla."; }
+  else{ warn.style.display="none"; }
+  renderPreview();
+}
+function collectFormData(){
+  return {
+    name:$("fName").value||"Nombre Apellido",
+    role:$("fRole").value||"Cargo objetivo",
+    contact:$("fContact").value||"Ciudad · Teléfono · Correo",
+    profile:$("fProfile").value||"",
+    exp:$("fExp").value.split(/\n+/).map(l=>l.trim()).filter(Boolean),
+    skills:$("fSkills").value.split(",").map(s=>s.trim()).filter(Boolean),
+    photo:photoDataUrl
+  };
+}
+function buildClasico(d){
+  return `<div class="cvout tpl-clasico">
+    <h2>${esc(d.name)}</h2><div class="role">${esc(d.role)}</div><div class="contact">${esc(d.contact)}</div>
+    ${d.profile?`<h4>Perfil profesional</h4><p>${esc(d.profile)}</p>`:""}
+    ${d.exp.length?`<h4>Experiencia y logros</h4><ul>${d.exp.map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`:""}
+    ${d.skills.length?`<h4>Competencias clave</h4><p class="kwline">${d.skills.map(esc).join(" · ")}</p>`:""}
+  </div>`;
+}
+function buildModerno(d){
+  return `<div class="cvout tpl-moderno">
+    <div class="cvhead">
+      <div><h2>${esc(d.name)}</h2><div class="role">${esc(d.role)}</div></div>
+      ${d.photo?`<img class="cvph" src="${d.photo}" alt="Foto de ${esc(d.name)}">`:""}
+    </div>
+    <div class="cvbody">
+      <div class="contact">${esc(d.contact)}</div>
+      ${d.profile?`<h4>Perfil profesional</h4><p>${esc(d.profile)}</p>`:""}
+      ${d.exp.length?`<h4>Experiencia y logros</h4><ul>${d.exp.map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`:""}
+      ${d.skills.length?`<h4>Competencias clave</h4><p class="kwline">${d.skills.map(esc).join(" · ")}</p>`:""}
+    </div>
+  </div>`;
+}
+function buildEjecutivo(d){
+  return `<div class="cvout tpl-ejecutivo">
+    <div class="cv-sidebar">
+      ${d.photo?`<img class="cvph-lg" src="${d.photo}" alt="Foto de ${esc(d.name)}">`:""}
+      <h2>${esc(d.name)}</h2><div class="role">${esc(d.role)}</div>
+      <h4>Contacto</h4><p>${esc(d.contact)}</p>
+      ${d.skills.length?`<h4>Competencias</h4><p class="kwline">${d.skills.map(esc).join(" · ")}</p>`:""}
+    </div>
+    <div class="cv-main">
+      ${d.profile?`<h4>Perfil profesional</h4><p>${esc(d.profile)}</p>`:""}
+      ${d.exp.length?`<h4>Experiencia y logros</h4><ul>${d.exp.map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`:""}
+    </div>
+  </div>`;
+}
+const TPL_BUILDERS={clasico:buildClasico,moderno:buildModerno,ejecutivo:buildEjecutivo};
 function renderPreview(){
-  const name=$("fName").value||"Nombre Apellido", role=$("fRole").value||"Cargo objetivo", contact=$("fContact").value||"Ciudad · Teléfono · Correo";
-  const profile=$("fProfile").value||"", exp=$("fExp").value.split(/\n+/).map(l=>l.trim()).filter(Boolean), skills=$("fSkills").value.split(",").map(s=>s.trim()).filter(Boolean);
-  $("cvPreview").innerHTML=`<div class="cvout"><h2>${esc(name)}</h2><div class="role">${esc(role)}</div><div class="contact">${esc(contact)}</div>
-    ${profile?`<h4>Perfil profesional</h4><p>${esc(profile)}</p>`:""}
-    ${exp.length?`<h4>Experiencia y logros</h4><ul>${exp.map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`:""}
-    ${skills.length?`<h4>Competencias clave</h4><p class="kwline">${skills.map(esc).join(" · ")}</p>`:""}</div>`;
+  const d=collectFormData();
+  $("cvPreview").innerHTML=(TPL_BUILDERS[template]||buildClasico)(d);
 }
 function downloadCV(){
   const name=$("fName").value||"CV";
@@ -559,6 +883,31 @@ function switchView(v){
   try{window.scrollTo({top:0,behavior:"smooth"});}catch(e){}
 }
 
+/* ================= Wizard del optimizador de CV (4 pasos) ================= */
+let analyzed=false;
+let seeded=false;
+function goStep(n){
+  if(n>1 && !analyzed) return;
+  if(n===3 && !seeded){
+    const la=window.__lastAnalysis;
+    if(la){ seedRebuild($("cv").value,la.target,la.a); seeded=true; }
+  }
+  if(n===4) renderPreview();
+  for(let i=1;i<=4;i++){
+    const step=$("step"+i); if(step) step.classList.toggle("on",i===n);
+    const dot=$("s"+i);
+    if(dot){ dot.classList.toggle("on",i===n); dot.classList.toggle("locked",i>1&&!analyzed); }
+  }
+  safeScroll("wizardSteps");
+}
+function resetWizard(){
+  analyzed=false; seeded=false; template="clasico"; photoDataUrl=null;
+  renderPhotoThumb();
+  document.querySelectorAll(".tpl-card").forEach(c=>c.classList.toggle("active",c.getAttribute("data-tpl")==="clasico"));
+  $("tplWarn").style.display="none";
+  goStep(1);
+}
+
 /* ================= Wire-up ================= */
 function on(id,ev,fn){const el=$(id);if(el)el.addEventListener(ev,fn);}
 function pick(name){ $("q").value=name; doSearch(name); }
@@ -575,6 +924,10 @@ function wireUp(){
   on("ciudad","change",refiltrar);
   on("nivel","change",refiltrar);
 
+  // Salario y fuente filtran sobre lo ya descargado, sin volver a consultar el backend.
+  on("salario","change",aplicarFiltrosClientSide);
+  on("fuente","change",aplicarFiltrosClientSide);
+
   const chips=$("chips");
   if(chips) chips.innerHTML=QUICK.map(c=>`<span class="chip" data-pick="${escapeAttr(c)}">${escapeHtml(c)}</span>`).join("");
 
@@ -584,6 +937,16 @@ function wireUp(){
     if(p){ e.preventDefault(); pick(p.getAttribute("data-pick")); return; }
     const tv=e.target.closest("[data-tocv]");
     if(tv){ e.preventDefault(); if(APP.currentTarget && $("target")) $("target").value=APP.currentTarget; switchView("cv"); return; }
+    const cf=e.target.closest("[data-clearfiltros]");
+    if(cf){ e.preventDefault(); if($("salario"))$("salario").value="0"; if($("fuente"))$("fuente").value=""; aplicarFiltrosClientSide(); return; }
+    const dot=e.target.closest(".stp[data-step]");
+    if(dot){ goStep(parseInt(dot.getAttribute("data-step"),10)); return; }
+    const nextBtn=e.target.closest("[data-nextstep]");
+    if(nextBtn){ goStep(parseInt(nextBtn.getAttribute("data-nextstep"),10)); return; }
+    const prevBtn=e.target.closest("[data-prevstep]");
+    if(prevBtn){ goStep(parseInt(prevBtn.getAttribute("data-prevstep"),10)); return; }
+    const tplCard=e.target.closest(".tpl-card[data-tpl]");
+    if(tplCard){ selectTemplate(tplCard.getAttribute("data-tpl")); return; }
   });
 
   // CV
@@ -597,18 +960,26 @@ function wireUp(){
   on("file","change",e=>handleFile(e.target.files[0]));
   on("analyze","click",()=>{
     const cv=$("cv").value.trim(), target=$("target").value.trim();
-    if(!cv){ $("atsEmpty").style.display="";$("atsEmpty").textContent="Primero pega o sube tu hoja de vida.";$("ats").classList.remove("show");return; }
+    const msg=$("analyzeMsg");
+    if(!cv){ msg.style.display="";msg.textContent="Primero pega o sube tu hoja de vida.";return; }
+    msg.style.display="none";
     renderATS(analyze(cv,target),target);
+    analyzed=true;
+    goStep(2);
   });
   on("clear","click",()=>{
     $("cv").value="";$("target").value="";$("filetag").innerHTML="";
-    $("ats").classList.remove("show");$("rebuildCard").style.display="none";
-    $("atsEmpty").style.display="";$("atsEmpty").textContent="Analiza tu CV para ver el diagnóstico aquí.";
-    ["s2","s3"].forEach(s=>$(s).classList.remove("on"));
+    $("analyzeMsg").style.display="none";
+    resetWizard();
   });
-  on("rebuild","click",()=>{ const la=window.__lastAnalysis; if(la) seedRebuild($("cv").value,la.target,la.a); });
-  on("preview","click",renderPreview);
+
+  // Foto de perfil
+  on("photoPick","click",()=>{ if($("photoFile")) $("photoFile").click(); });
+  on("photoFile","change",e=>onPhotoSelected(e.target.files[0]));
+  on("photoRemove","click",removePhoto);
+
   on("download","click",downloadCV);
+  on("printCV","click",()=>window.print());
   ["fName","fRole","fContact","fProfile","fExp","fSkills"].forEach(id=>on(id,"input",renderPreview));
 }
 function init(){ wireUp(); }
