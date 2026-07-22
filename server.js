@@ -26,13 +26,22 @@ app.use(express.static("public")); // sirve el buscador y el optimizador de CV
 const JOOBLE_KEY = process.env.JOOBLE_KEY || "PEGA_AQUI_TU_CLAVE_DE_JOOBLE";
 const PORT = process.env.PORT || 3000;
 
+// Jooble no tiene un filtro de "nivel", así que lo aproximamos revisando
+// palabras clave típicas en el título de la vacante.
+const NIVELES = {
+  direccion: /\b(director|directora|gerente general|vicepresidente|presidente|ceo)\b/i,
+  jefatura: /\b(jefe|jefa|coordinador|coordinadora|supervisor|supervisora|l[ií]der|encargad[oa])\b/i,
+  operativo: /\b(analista|auxiliar|asistente|operari[oa]|operativ[oa]|ejecutiv[oa]|agente)\b/i,
+};
+
 /**
- * Endpoint principal: /api/ofertas?cargo=Director de Cobranza&ciudad=Bogotá
+ * Endpoint principal: /api/ofertas?cargo=Director de Cobranza&ciudad=Bogotá&nivel=direccion
  * El buscador del frontend llamará aquí en vez de usar ofertas fijas.
  */
 app.get("/api/ofertas", async (req, res) => {
   const cargo = (req.query.cargo || "").trim();
   const ciudad = (req.query.ciudad || "Colombia").trim();
+  const nivel = (req.query.nivel || "").trim().toLowerCase();
 
   if (!cargo) {
     return res.status(400).json({ error: "Escribe un cargo para buscar." });
@@ -46,7 +55,7 @@ app.get("/api/ofertas", async (req, res) => {
 
   try {
     // Jooble recibe un POST con la clave en la URL y el filtro en el cuerpo.
-    const respuesta = await fetch(`https://jooble.org/api/${JOOBLE_KEY}`, {
+    const respuesta = await fetch(`https://co.jooble.org/api/${JOOBLE_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ keywords: cargo, location: ciudad }),
@@ -59,7 +68,7 @@ app.get("/api/ofertas", async (req, res) => {
     const datos = await respuesta.json();
 
     // Normalizamos: dejamos solo lo que el panel necesita mostrar.
-    const ofertas = (datos.jobs || []).map((j) => ({
+    let ofertas = (datos.jobs || []).map((j) => ({
       titulo: j.title,
       empresa: j.company || "Empresa confidencial",
       ubicacion: j.location,
@@ -70,7 +79,12 @@ app.get("/api/ofertas", async (req, res) => {
       resumen: (j.snippet || "").replace(/<[^>]*>/g, "").slice(0, 220),
     }));
 
-    res.json({ cargo, ciudad, total: ofertas.length, ofertas });
+    const patronNivel = NIVELES[nivel];
+    if (patronNivel) {
+      ofertas = ofertas.filter((o) => patronNivel.test(o.titulo));
+    }
+
+    res.json({ cargo, ciudad, nivel: nivel || null, total: ofertas.length, ofertas });
   } catch (err) {
     console.error("Error consultando Jooble:", err.message);
     res.status(502).json({ error: "No se pudo consultar las ofertas ahora mismo." });

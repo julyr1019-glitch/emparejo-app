@@ -72,19 +72,51 @@ Si ves una lista de ofertas reales, ¡el cerebro está funcionando!
 
 ---
 
+## Publicarlo en internet (Render o Railway)
+
+El proyecto ya está listo para desplegarse: usa el puerto de la plataforma
+(`process.env.PORT`), no falla si no encuentra un archivo `.env` local, y la
+clave de Jooble nunca se sube al repositorio (`.gitignore` la excluye).
+
+Pasos generales (son casi idénticos en Render y en Railway):
+
+1. **Sube el proyecto a GitHub** (si aún no tiene remoto):
+   ```
+   git remote add origin https://github.com/TU_USUARIO/emparejo-app.git
+   git push -u origin master
+   ```
+2. **Crea una cuenta** en https://render.com o https://railway.app y conecta
+   tu cuenta de GitHub.
+3. **Crea un nuevo "Web Service"** (Render) o "New Project → Deploy from
+   GitHub repo" (Railway) apuntando a este repositorio.
+4. La plataforma detecta Node automáticamente. Si te pide comandos:
+   - Build: `npm install`
+   - Start: `npm start`
+5. **Configura la variable de entorno `JOOBLE_KEY`** en el panel de la
+   plataforma (nunca en el código). Usa la clave de `co.jooble.org` que ya
+   tienes en tu `.env` local.
+6. Despliega. La plataforma te da una URL pública (algo como
+   `https://emparejo.onrender.com`) donde el buscador quedará disponible
+   para cualquiera.
+
+Por seguridad, **la clave de Jooble solo debes pegarla tú mismo** en el panel
+de variables de entorno de Render/Railway — no se comparte por chat ni la
+pega un tercero por ti.
+
+---
+
 ## Lo que sigue (pídeselo a Claude Code)
 
-Una vez tengas esto andando, estos son los siguientes encargos naturales.
-Puedes copiarlos tal cual a Claude Code:
+Ya se hicieron dos de los encargos naturales sobre esta base:
+✅ filtro por ciudad y nivel (dirección, jefatura, operativo), y
+✅ preparación para publicarlo en internet.
 
-- "Conecta el buscador de `emparejo_buscador.html` a este backend, para que en
-  vez de mostrar ofertas fijas llame a `/api/ofertas` con el cargo que escriba
-  el usuario."
-- "Añade un filtro por ciudad y por nivel (dirección, jefatura, operativo)."
+Otros encargos que puedes copiar tal cual a Claude Code:
+
 - "Guarda en una base de datos las ofertas que el usuario marque como
   favoritas o de interés."
-- "Prepara el proyecto para publicarlo en internet (por ejemplo en Render o
-  Railway) para que otras personas puedan usarlo."
+- "Añade caché para no golpear la API de Jooble en cada búsqueda repetida."
+- "Añade paginación para ver más de las primeras ofertas encontradas."
 
 Cada uno de esos pasos es acotado. La parte más cara —la interfaz— ya la
 tienes construida.

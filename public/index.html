@@ -17,13 +17,18 @@
   header h1{margin:0 0 4px;font-size:26px}
   header p{margin:0 0 20px;color:var(--muted);font-size:14px}
 
-  .searchbar{display:flex;gap:8px;position:relative}
-  #q{flex:1;padding:14px 16px;font-size:16px;border-radius:12px;
+  .searchbar{display:flex;gap:8px;position:relative;flex-wrap:wrap}
+  #q{flex:1;min-width:200px;padding:14px 16px;font-size:16px;border-radius:12px;
     border:1px solid var(--line);background:var(--panel);color:var(--ink)}
   #q:focus{outline:none;border-color:var(--sky)}
   #btn{padding:0 22px;font-size:15px;font-weight:700;border:none;border-radius:12px;
     background:var(--sky);color:#04121f;cursor:pointer}
   #btn:hover{filter:brightness(1.08)}
+
+  .filtros{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .filtros select{padding:10px 12px;font-size:14px;border-radius:10px;
+    border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+  .filtros select:focus{outline:none;border-color:var(--sky)}
 
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
   .chip{padding:6px 12px;font-size:13px;border-radius:20px;cursor:pointer;
@@ -62,6 +67,23 @@
     <button id="btn">Buscar</button>
   </div>
 
+  <div class="filtros">
+    <select id="ciudad">
+      <option value="Colombia">Toda Colombia</option>
+      <option value="Bogotá">Bogotá</option>
+      <option value="Medellín">Medellín</option>
+      <option value="Cali">Cali</option>
+      <option value="Barranquilla">Barranquilla</option>
+      <option value="Bucaramanga">Bucaramanga</option>
+    </select>
+    <select id="nivel">
+      <option value="">Todos los niveles</option>
+      <option value="direccion">Dirección</option>
+      <option value="jefatura">Jefatura</option>
+      <option value="operativo">Operativo</option>
+    </select>
+  </div>
+
   <div class="chips" id="chips"></div>
 
   <div id="status"></div>
@@ -94,7 +116,11 @@ async function doSearch(termino){
   results.innerHTML = "";
 
   try{
-    const url = `${API_BASE}/api/ofertas?cargo=${encodeURIComponent(cargo)}`;
+    const ciudad = $("ciudad") ? $("ciudad").value : "Colombia";
+    const nivel = $("nivel") ? $("nivel").value : "";
+    const params = new URLSearchParams({ cargo, ciudad });
+    if(nivel) params.set("nivel", nivel);
+    const url = `${API_BASE}/api/ofertas?${params.toString()}`;
     const resp = await fetch(url);
     const data = await resp.json();
 
@@ -144,6 +170,11 @@ function on(id,ev,fn){ const el=$(id); if(el) el.addEventListener(ev,fn); }
 function wireUp(){
   on("btn","click",()=>doSearch($("q").value));
   on("q","keydown",e=>{ if(e.key==="Enter") doSearch($("q").value); });
+
+  // Si ya hay una búsqueda activa, cambiar ciudad o nivel la repite con el nuevo filtro.
+  const refiltrar = ()=>{ if($("q").value.trim()) doSearch($("q").value); };
+  on("ciudad","change",refiltrar);
+  on("nivel","change",refiltrar);
 
   const chips = $("chips");
   if(chips){

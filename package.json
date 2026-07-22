@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Backend de Emparejo: consulta ofertas reales vía API de Jooble",
   "main": "server.js",
+  "engines": {
+    "node": ">=22.9.0"
+  },
   "scripts": {
-    "start": "node server.js"
+    "start": "node --env-file-if-exists=.env server.js"
   },
   "keywords": [],
   "author": "",
