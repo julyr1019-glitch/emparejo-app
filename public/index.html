@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Emparejo — Buscador de empleo</title>
+
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#4aa3ff">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Emparejo">
+
 <style>
   :root{
     --bg:#0f1724; --panel:#16202e; --line:#243244;
@@ -192,6 +201,13 @@ function wireUp(){
 
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",wireUp);
 else wireUp();
+
+/* ================= PWA: registrar service worker ================= */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("/sw.js").catch(err=>console.error("SW error:",err));
+  });
+}
 </script>
 </body>
 </html>
