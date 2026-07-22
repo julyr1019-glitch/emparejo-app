@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emparejo — Buscador de empleo</title>
+<style>
+  :root{
+    --bg:#0f1724; --panel:#16202e; --line:#243244;
+    --ink:#e8eef6; --muted:#9fb0c3;
+    --sky:#4aa3ff; --lime:#7be08a; --coral:#ff7a7a; --gold:#ffcf5c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 16px 60px}
+  header h1{margin:0 0 4px;font-size:26px}
+  header p{margin:0 0 20px;color:var(--muted);font-size:14px}
+
+  .searchbar{display:flex;gap:8px;position:relative}
+  #q{flex:1;padding:14px 16px;font-size:16px;border-radius:12px;
+    border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+  #q:focus{outline:none;border-color:var(--sky)}
+  #btn{padding:0 22px;font-size:15px;font-weight:700;border:none;border-radius:12px;
+    background:var(--sky);color:#04121f;cursor:pointer}
+  #btn:hover{filter:brightness(1.08)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+  .chip{padding:6px 12px;font-size:13px;border-radius:20px;cursor:pointer;
+    background:var(--panel);border:1px solid var(--line);color:var(--muted)}
+  .chip:hover{border-color:var(--sky);color:var(--ink)}
+
+  #status{margin:18px 0 8px;font-size:14px;color:var(--muted);min-height:20px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;margin-bottom:12px}
+  .card h3{margin:0 0 4px;font-size:17px;color:var(--ink)}
+  .card .meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .card .meta b{color:var(--lime);font-weight:600}
+  .card p{margin:8px 0;font-size:14px;color:#c7d4e2}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;
+    margin-top:10px;flex-wrap:wrap;gap:8px}
+  .card .src{font-size:12px;color:var(--gold)}
+  .card a.apply{padding:8px 14px;font-size:14px;font-weight:700;border-radius:10px;
+    background:var(--lime);color:#04121f;text-decoration:none}
+  .card a.apply:hover{filter:brightness(1.08)}
+
+  .empty{color:var(--muted);font-size:14px;padding:20px;text-align:center;
+    border:1px dashed var(--line);border-radius:12px}
+  .err{color:var(--coral)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Emparejo</h1>
+    <p>Escribe el cargo al que aspiras y encuentra ofertas reales y vigentes en Colombia.</p>
+  </header>
+
+  <div class="searchbar">
+    <input id="q" type="text" placeholder="Ej: Director de Cobranza, Gerente de Operaciones…" autocomplete="off">
+    <button id="btn">Buscar</button>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div id="status"></div>
+  <div id="results"></div>
+</div>
+
+<script>
+/* ================= Configuración ================= */
+/* Cuando corras el backend localmente esto queda vacío (mismo origen).
+   Si publicas el frontend y el backend por separado, pon aquí la URL del backend. */
+const API_BASE = "";
+
+const QUICK = ["Director de Cobranza","Gerente de Operaciones","Jefe de Cobranza",
+               "Director BPO","Analista BI","Coordinador de Cartera"];
+
+const $ = id => document.getElementById(id);
+
+/* ================= Búsqueda contra el backend ================= */
+async function doSearch(termino){
+  const cargo = (termino || "").trim();
+  const status = $("status");
+  const results = $("results");
+
+  if(!cargo){
+    status.textContent = "Escribe un cargo para buscar.";
+    return;
+  }
+
+  status.textContent = `Buscando ofertas de "${cargo}"…`;
+  results.innerHTML = "";
+
+  try{
+    const url = `${API_BASE}/api/ofertas?cargo=${encodeURIComponent(cargo)}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    if(!resp.ok){
+      status.innerHTML = `<span class="err">⚠ ${data.error || "No se pudo buscar."}</span>`;
+      return;
+    }
+
+    if(!data.ofertas || data.ofertas.length === 0){
+      status.textContent = `Sin resultados para "${cargo}" por ahora.`;
+      results.innerHTML = `<div class="empty">No encontramos vacantes para ese cargo en este momento. Prueba con un término más amplio (por ejemplo "Cobranza" en vez del cargo completo).</div>`;
+      return;
+    }
+
+    status.textContent = `${data.total} ofertas encontradas para "${cargo}" en ${data.ciudad}.`;
+    results.innerHTML = data.ofertas.map(renderCard).join("");
+
+  }catch(err){
+    status.innerHTML = `<span class="err">⚠ No se pudo conectar con el servidor. ¿Está encendido el backend? (npm start)</span>`;
+    console.error(err);
+  }
+}
+
+function renderCard(o){
+  return `
+    <div class="card">
+      <h3>${escapeHtml(o.titulo)}</h3>
+      <div class="meta">
+        ${escapeHtml(o.empresa)} · <b>${escapeHtml(o.ubicacion)}</b>
+        ${o.salario ? " · " + escapeHtml(o.salario) : ""}
+      </div>
+      ${o.resumen ? `<p>${escapeHtml(o.resumen)}…</p>` : ""}
+      <div class="foot">
+        <span class="src">Fuente: ${escapeHtml(o.fuente || "portal")}</span>
+        <a class="apply" href="${escapeAttr(o.enlace)}" target="_blank" rel="noopener">Ver oferta →</a>
+      </div>
+    </div>`;
+}
+
+/* Pequeñas defensas para no romper el render con caracteres raros */
+function escapeHtml(s){ return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/'/g,"&#39;"); }
+
+/* ================= Wire-up robusto ================= */
+function on(id,ev,fn){ const el=$(id); if(el) el.addEventListener(ev,fn); }
+
+function wireUp(){
+  on("btn","click",()=>doSearch($("q").value));
+  on("q","keydown",e=>{ if(e.key==="Enter") doSearch($("q").value); });
+
+  const chips = $("chips");
+  if(chips){
+    chips.innerHTML = QUICK.map(c=>`<span class="chip" data-pick="${escapeAttr(c)}">${escapeHtml(c)}</span>`).join("");
+    // Delegación de eventos: robusta dentro del sandbox, sin onclick inline
+    chips.addEventListener("click", e=>{
+      const chip = e.target.closest("[data-pick]");
+      if(!chip) return;
+      const cargo = chip.getAttribute("data-pick");
+      $("q").value = cargo;
+      doSearch(cargo);
+    });
+  }
+}
+
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",wireUp);
+else wireUp();
+</script>
+</body>
+</html>
